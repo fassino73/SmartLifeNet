@@ -8,10 +8,10 @@ namespace SmartLifeNet.Classes
 {
     public class SwitchDevice : SingleChannelDevice
     {
-        
+        public async Task<string> TurnOff() => await SetState(0);
 
-        public async Task TurnOff() => await SetState(0);
-        public async Task TurnOn() => await SetState(1);
+        public async Task<string> TurnOn() => await SetState(1);
+
         public async Task Toggle()
         { 
             if(await GetState() == "on") 
@@ -20,7 +20,8 @@ namespace SmartLifeNet.Classes
                 await TurnOn() ;
         }
 
-        public async override Task<string> GetState() => (bool)data.state ? "on" : "off";
+        public override Task<string> GetState() => (bool)data.state ? Task.FromResult("on") : Task.FromResult("off");
 
+        public async Task<bool> IsOn() => await GetState() == "on";
     }
 }

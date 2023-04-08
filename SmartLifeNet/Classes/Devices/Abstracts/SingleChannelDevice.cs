@@ -13,9 +13,9 @@ namespace SmartLifeNet.Classes
         public abstract Task<string> GetState();
         
 
-        public async Task SetState(int state)
+        public async Task<string> SetState(int state)
         {
-            await API.Rest.SetDeviceSkill(context.region, id, context.Credentials.access_token, state);
+            return await API.Rest.SetDeviceSkill(context.region, id, context.Credentials.access_token, state);
         }
     }
 }

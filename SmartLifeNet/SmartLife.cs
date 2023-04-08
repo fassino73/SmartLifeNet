@@ -36,7 +36,14 @@ namespace SmartLifeNet
         public async Task<Credentials> Connect()
         {
             if (System.IO.File.Exists("credentials.json"))
+            {
                 RestoreCredenditalsFromFile();
+            }
+            else
+            {
+                await GetCredentials();
+            }
+                
 
             if (Credentials.IsExpired)
             {
