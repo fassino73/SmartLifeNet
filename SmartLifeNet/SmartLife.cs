@@ -7,6 +7,7 @@ using SmartLifeNet.API.Responses;
 using System.Linq;
 using System.Collections.Generic;
 using Mapster;
+using System.IO;
 
 namespace SmartLifeNet
 {
@@ -33,50 +34,50 @@ namespace SmartLifeNet
             this.region = region;
         }
 
-        public async Task<Credentials> Connect()
+        public async Task<Credentials> ConnectAsync()
         {
             if (System.IO.File.Exists("credentials.json"))
             {
-                RestoreCredenditalsFromFile();
+                await RestoreCredentialsFromFileAsync();
             }
             else
             {
-                await GetCredentials();
+                await GetCredentialsAsync();
+                await StoreCredentialsToFileAsync();
             }
-                
 
             if (Credentials.IsExpired)
             {
-                await GetCredentials();
-                StoreCredenditalsToFile();
+                await GetCredentialsAsync();
+                await StoreCredentialsToFileAsync();
             }
 
             return Credentials;
         }
 
 
-        public async Task InitDevices()
+        public async Task InitDevicesAsync()
         {
             if (System.IO.File.Exists("devices.json"))
             {
-                RestoreDevicesFromFile();
+                await RestoreDevicesFromFileAsync();
             }
             else
             {
-                await GetDevices();
-                StoreDevicesToFile();
+                await GetDevicesAsync();
+                await StoreDevicesToFileAsync();
             }
         }
 
 
-        public async Task<Credentials> GetCredentials()
+        public async Task<Credentials> GetCredentialsAsync()
         {
             var response = await API.Rest.GetCredentials(email, password, region);
             Credentials = JsonConvert.DeserializeObject<Credentials>(response);
             return Credentials;
         }
 
-        public async Task GetDevices()
+        public async Task GetDevicesAsync()
         {
             var json = await API.Rest.GetDevices(region, Credentials.access_token);
             var response = JsonConvert.DeserializeObject<DiscoveryResponse>(json);
@@ -101,12 +102,22 @@ namespace SmartLifeNet
 
         private Dictionary<string, Device> deviceCache;
 
+        public Task StoreCredentialsToFileAsync(string filename = "credentials.json")
+            => System.IO.File.WriteAllTextAsync(filename, Credentials.AsJson());
 
-        public void StoreCredenditalsToFile(string filename = "credentials.json") => System.IO.File.WriteAllText(filename, Credentials.AsJson());
-        public void RestoreCredenditalsFromFile(string filename = "credentials.json") => Credentials = System.IO.File.ReadAllText(filename).FromJson<Credentials>();
+        public async Task RestoreCredentialsFromFileAsync(string filename = "credentials.json")
+        {
+            var text = await File.ReadAllTextAsync(filename);
+            Credentials = text.FromJson<Credentials>();
+        }
 
-        public void StoreDevicesToFile(string filename = "devices.json") => System.IO.File.WriteAllText(filename, Devices.AsJson());
-        public void RestoreDevicesFromFile(string filename = "devices.json") => CreateDevices(JsonConvert.DeserializeObject<Device[]>(System.IO.File.ReadAllText(filename)));
+        public Task StoreDevicesToFileAsync(string filename = "devices.json")
+            => File.WriteAllTextAsync(filename, Devices.AsJson());
 
+        public async Task RestoreDevicesFromFileAsync(string filename = "devices.json")
+        {
+            var text = await File.ReadAllTextAsync(filename);
+            CreateDevices(JsonConvert.DeserializeObject<Device[]>(text));
+        }
     }
 }

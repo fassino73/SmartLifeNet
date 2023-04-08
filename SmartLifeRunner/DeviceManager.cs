@@ -15,8 +15,8 @@ namespace SmartLifeRunner
 
         public async Task InitializeDevicesAsync()
         {
-            await smartLife.Connect();
-            await smartLife.InitDevices();
+            await smartLife.ConnectAsync();
+            await smartLife.InitDevicesAsync();
         }
 
         public Device? GetDevice(string deviceId)

@@ -19,7 +19,7 @@ namespace SmartLifeNet.Tests
         public async Task GetCredentialsTest()
         {
             var smart = new SmartLife(email, password);
-            var cred = await smart.GetCredentials();
+            var cred = await smart.GetCredentialsAsync();
             Assert.IsNotNull(cred);
             Console.WriteLine(cred);
         }
@@ -28,16 +28,16 @@ namespace SmartLifeNet.Tests
         public async Task StoreCredenditalsToFileTest()
         {
             var smart = new SmartLife(email, password);
-            var cred = await smart.GetCredentials();
-            smart.StoreCredenditalsToFile();
+            var cred = await smart.GetCredentialsAsync();
+            await smart.StoreCredentialsToFileAsync();
             Console.WriteLine(cred);
         }
 
         [TestMethod()]
-        public void RestoreCredenditalsFromFileTest()
+        public async Task RestoreCredenditalsFromFileTest()
         {
             var smart = new SmartLife(email, password);
-            smart.RestoreCredenditalsFromFile();
+            await smart.RestoreCredentialsFromFileAsync();
             Assert.IsNotNull(smart.Credentials);
             Console.WriteLine(smart.Credentials);
         }
@@ -46,7 +46,7 @@ namespace SmartLifeNet.Tests
         public async Task ConnectTest()
         {
             var smart = new SmartLife(email, password);
-            await smart.Connect();
+            await smart.ConnectAsync();
             Assert.IsNotNull(smart.Credentials);
             Console.WriteLine(smart.Credentials);
         }
@@ -55,8 +55,8 @@ namespace SmartLifeNet.Tests
         public async Task GetDevicesTest()
         {
             var smart = new SmartLife(email, password);
-            await smart.Connect();
-            await smart.GetDevices();
+            await smart.ConnectAsync();
+            await smart.GetDevicesAsync();
             Assert.IsNotNull(smart.Devices);
         }
 
@@ -64,8 +64,8 @@ namespace SmartLifeNet.Tests
         public async Task InitDevicesTest()
         {
             var smart = new SmartLife(email, password);
-            await smart.Connect();
-            await smart.InitDevices();
+            await smart.ConnectAsync();
+            await smart.InitDevicesAsync();
             Assert.IsNotNull(smart.Devices);
         }
 
@@ -73,18 +73,18 @@ namespace SmartLifeNet.Tests
         public async Task StoreDevicesToFileTest()
         {
             var smart = new SmartLife(email, password);
-            await smart.Connect();
-            await smart.GetDevices();
-            smart.StoreDevicesToFile();
+            await smart.ConnectAsync();
+            await smart.GetDevicesAsync();
+            await smart.StoreDevicesToFileAsync();
         }
 
         [TestMethod()]
         public async Task RestoreDevicesFromFileTest()
         {
             var smart = new SmartLife(email, password);
-            await smart.Connect();
-            await smart.GetDevices();
-            smart.RestoreDevicesFromFile();
+            await smart.ConnectAsync();
+            await smart.GetDevicesAsync();
+            await smart.RestoreDevicesFromFileAsync();
         }
 
 
@@ -92,8 +92,8 @@ namespace SmartLifeNet.Tests
         public async Task SwitchTest()
         {
             var smart = new SmartLife(email, password);
-            await smart.Connect();
-            await smart.InitDevices();
+            await smart.ConnectAsync();
+            await smart.InitDevicesAsync();
             var device = smart.Devices.FirstOrDefault(x => x is SmartLifeNet.Classes.SwitchDevice) as SmartLifeNet.Classes.SwitchDevice;
             await device?.SetState(1);
         }
@@ -102,8 +102,8 @@ namespace SmartLifeNet.Tests
         public async Task MultiSwitchTest()
         {
             var smart = new SmartLife(email, password);
-            await smart.Connect();
-            await smart.InitDevices();
+            await smart.ConnectAsync();
+            await smart.InitDevicesAsync();
             var device = smart.Devices.FirstOrDefault(x => x is SmartLifeNet.Classes.MultiSwitchDevice) as SmartLifeNet.Classes.MultiSwitchDevice;
             await device?.SetAllChannels(1);
 
