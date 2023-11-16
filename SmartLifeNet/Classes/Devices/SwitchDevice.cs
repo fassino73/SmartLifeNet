@@ -8,9 +8,9 @@ namespace SmartLifeNet.Classes
 {
     public class SwitchDevice : SingleChannelDevice
     {
-        public async Task<string> TurnOff() => await SetState(0);
+        public async Task<bool> TurnOff() => await SetState(0);
 
-        public async Task<string> TurnOn() => await SetState(1);
+        public async Task<bool> TurnOn() => await SetState(1);
 
         public async Task Toggle()
         { 

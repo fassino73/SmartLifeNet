@@ -1,4 +1,6 @@
-﻿using SmartLifeNet.Helpers.Extensions;
+﻿using Newtonsoft.Json;
+using SmartLifeNet.API.Responses;
+using SmartLifeNet.Helpers.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -13,9 +15,11 @@ namespace SmartLifeNet.Classes
         public abstract Task<string> GetState();
         
 
-        public async Task<string> SetState(int state)
+        public async Task<bool> SetState(int state)
         {
-            return await API.Rest.SetDeviceSkill(context.region, id, context.Credentials.access_token, state);
+            var json = await API.Rest.SetDeviceSkill(context.region, id, context.Credentials.access_token, state);
+            var response = JsonConvert.DeserializeObject<DiscoveryResponse>(json);
+            return (response?.header.code == Constants.DiscoveryCode.SUCCESS);
         }
     }
 }

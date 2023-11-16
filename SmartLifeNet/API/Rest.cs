@@ -13,18 +13,17 @@ namespace SmartLifeNet.API
 
     public static class Rest
     {
-        public static async Task<string> GetCredentials(string email, string password, string region)
+        public static async Task<string> GetCredentials(string email, string password, string region, int country)
         {
             var host = Constants.URLs.GetHost(region);
-            var url = Constants.URLs.GetAuthUrl(host);
-            var client = new RestClient(url) {Timeout = -1};
+            var client = new RestClient("https://" + host);
 
-            var request = new RestRequest(Method.POST);
+            var request = new RestRequest(Constants.URLs.GetAuthUrl(), Method.Post);
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
             request.AddHeader("Host", host);
             request.AddParameter("userName", email);
             request.AddParameter("password", password);
-            request.AddParameter("countryCode", region);
+            request.AddParameter("countryCode", country);
             request.AddParameter("bizType", Constants.AppData.BIZ_TYPE);
             request.AddParameter("from", Constants.AppData.FROM);
 
@@ -36,10 +35,9 @@ namespace SmartLifeNet.API
         public static async Task<string> GetDevices(string region, string accessToken)
         {
             var host = Constants.URLs.GetHost(region);
-            var url = Constants.URLs.GetSkillUrl(host);
-            var client = new RestClient(url) {Timeout = -1};
-           
-            var request = new RestRequest(Method.POST);
+            var client = new RestClient("https://" + host);
+
+            var request = new RestRequest(Constants.URLs.GetSkillUrl(), Method.Post);
             request.AddHeader("Connection", "keep-alive");
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
@@ -47,7 +45,7 @@ namespace SmartLifeNet.API
 
             var body = new {
                 header = new {
-                    name = "discovery",
+                    name = "Discovery",
                     @namespace = "discovery",
                     payloadVersion = 1,
                 },
@@ -64,10 +62,9 @@ namespace SmartLifeNet.API
         public static async Task<string> SetDeviceSkill(string region, string deviceId, string accessToken, int state)
         {
             var host = Constants.URLs.GetHost(region);
-            var url = Constants.URLs.GetSkillUrl(host);
-            var client = new RestClient(url) {Timeout = -1};
-           
-            var request = new RestRequest(Method.POST);
+            var client = new RestClient("https://" + host);
+
+            var request = new RestRequest(Constants.URLs.GetSkillUrl(), Method.Post);
             request.AddHeader("Connection", "keep-alive");
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");

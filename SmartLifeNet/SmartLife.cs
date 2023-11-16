@@ -8,12 +8,14 @@ using System.Linq;
 using System.Collections.Generic;
 using Mapster;
 using System.IO;
+using System.Text;
 
 namespace SmartLifeNet
 {
     public class SmartLife
     {
         public string region { get; set; }
+        public int country  { get; set; }
         public string email { get; set; }
         public string password { get; set; }
         public string at { get; set; }
@@ -27,11 +29,12 @@ namespace SmartLifeNet
         public Device[] Devices { get; private set; }
 
 
-        public SmartLife(string email, string password, string region = "EU")
+        public SmartLife(string email, string password, string region = "EU", int country = 33)
         {
             this.email = email;
             this.password = password;
             this.region = region;
+            this.country = country;
         }
 
         public async Task<Credentials> ConnectAsync()
@@ -56,7 +59,7 @@ namespace SmartLifeNet
         }
 
 
-        public async Task InitDevicesAsync()
+        public async Task<bool> InitDevicesAsync()
         {
             if (System.IO.File.Exists("devices.json"))
             {
@@ -64,26 +67,29 @@ namespace SmartLifeNet
             }
             else
             {
-                await GetDevicesAsync();
+                if (!await GetDevicesAsync())
+                    return false;
                 await StoreDevicesToFileAsync();
             }
+            return true;
         }
 
 
         public async Task<Credentials> GetCredentialsAsync()
         {
-            var response = await API.Rest.GetCredentials(email, password, region);
+            var response = await API.Rest.GetCredentials(email, password, region, country);
             Credentials = JsonConvert.DeserializeObject<Credentials>(response);
             return Credentials;
         }
 
-        public async Task GetDevicesAsync()
+        public async Task<bool> GetDevicesAsync()
         {
             var json = await API.Rest.GetDevices(region, Credentials.access_token);
             var response = JsonConvert.DeserializeObject<DiscoveryResponse>(json);
-            if (response.header.code != Constants.DiscoveryCode.SUCCESS) return;
+            if (response.header.code != Constants.DiscoveryCode.SUCCESS) return false;
 
             CreateDevices(response.payload.devices.Select(x => x.Adapt<Device>()).ToArray());
+            return true;
         }
 
         private void CreateDevices(Device[] devices)

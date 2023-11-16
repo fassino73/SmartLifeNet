@@ -12,15 +12,15 @@ namespace SmartLifeNet.Constants
             return $"px1.tuya{region.ToLower()}.com";
         }
 
-        public static string GetAuthUrl(string host)
+        public static string GetAuthUrl()
         {
-            return $"https://{host}/homeassistant/auth.do";
+            return $"homeassistant/auth.do";
         }
 
 
-        public static string GetSkillUrl(string host)
+        public static string GetSkillUrl()
         {
-            return $"https://{host}/homeassistant/skill";
+            return $"homeassistant/skill";
         }
 
 
