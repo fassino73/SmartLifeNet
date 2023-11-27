@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SmartLifeNet.API.Responses;
+using SmartLifeNet.Helpers;
 using SmartLifeNet.Helpers.Extensions;
 using System;
 using System.Collections.Generic;
@@ -12,14 +13,31 @@ namespace SmartLifeNet.Classes
 {
     public abstract class SingleChannelDevice : Device
     {
-        public abstract Task<string> GetState();
-        
+#if NOTWORKING
+     public async Task<string> GetState()
+        {
+            var json = await API.Rest.QueryDevice(context.region, id, context.Credentials.access_token);
+            var response = JsonConvert.DeserializeObject<DiscoveryResponse>(json);
+            if(response?.header.code == "FrequentlyInvoke")
+            {
+                throw new SmartLifeError(response?.header.msg);
+            }
+            if (response?.header.code == Constants.DiscoveryCode.SUCCESS)
+            {
+                return "on";
+            }
+            return null;
+        }
+#endif
 
-        public async Task<bool> SetState(int state)
+        public async Task SetState(int state)
         {
             var json = await API.Rest.SetDeviceSkill(context.region, id, context.Credentials.access_token, state);
             var response = JsonConvert.DeserializeObject<DiscoveryResponse>(json);
-            return (response?.header.code == Constants.DiscoveryCode.SUCCESS);
+            if (response?.header.code != Constants.DiscoveryCode.SUCCESS)
+            {
+                throw new SmartLifeError(response?.header.msg);
+            }
         }
     }
 }

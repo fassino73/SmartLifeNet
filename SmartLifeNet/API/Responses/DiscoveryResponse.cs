@@ -24,6 +24,8 @@ namespace SmartLifeNet.API.Responses
     {
         public string code { get; set; }
         public string payloadVersion { get; set; }
+        public string msg { get; set; }
+
     }
 
     public class DiscoveryResponseDevice

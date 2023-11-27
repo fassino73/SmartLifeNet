@@ -41,7 +41,6 @@ namespace SmartLifeNet.API
             request.AddHeader("Connection", "keep-alive");
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            //request.AddHeader("Accept-Language", "es-ES,es;q=0.9,en;q=0.8");
 
             var body = new {
                 header = new {
@@ -68,7 +67,6 @@ namespace SmartLifeNet.API
             request.AddHeader("Connection", "keep-alive");
             request.AddHeader("Accept", "application/json");
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Accept-Language", "es-ES,es;q=0.9,en;q=0.8");
     
             var body = new {
                 header = new {
@@ -85,6 +83,36 @@ namespace SmartLifeNet.API
             var response = await client.ExecuteAsync(request, cancellationTokenSource.Token);
             return response.Content;
         }
+
+#if NOTWORKING
+        public static async Task<string> QueryDevice(string region, string deviceId, string accessToken)
+        {
+            var host = Constants.URLs.GetHost(region);
+            var client = new RestClient("https://" + host);
+
+            var request = new RestRequest(Constants.URLs.GetSkillUrl(), Method.Get);
+            request.AddHeader("Connection", "keep-alive");
+            request.AddHeader("Accept", "application/json");
+            request.AddHeader("Content-Type", "application/json");
+
+            var body = new
+            {
+                header = new
+                {
+                    name = "QueryDevice",
+                    @namespace = "query",
+                    payloadVersion = 1,
+                },
+                payload = new { accessToken, devId = deviceId, value = 1 }
+            };
+
+            request.AddParameter("application/json", body.AsJson(), ParameterType.RequestBody);
+
+            var cancellationTokenSource = new CancellationTokenSource();
+            var response = await client.ExecuteAsync(request, cancellationTokenSource.Token);
+            return response.Content;
+        }
+#endif
 
     }
 }

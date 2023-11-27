@@ -21,16 +21,12 @@ namespace SmartLifeNet.Classes
             else await SetChannel((int)outlet, 1);
         }
 
-        public async Task Toggle(int outlet)
-        {
-            if (await GetState(outlet) == "on") await TurnOff(outlet);
-            else await TurnOn(outlet);
-        }
-
+#if NOTWORKING
         public async Task<string> GetState(int outlet)
         {
             if (outlet >= Channels.Count()) return null;
             return await Channels[outlet].GetState();
         }
+#endif
     }
 }
